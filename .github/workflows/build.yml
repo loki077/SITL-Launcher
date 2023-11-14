@@ -1,0 +1,59 @@
+name: Package Application with Pyinstaller
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: ./
+
+    # recursive list the files for debugging
+    - name: List files
+      run: |
+        ls -R
+
+    - name: Copy Executable
+      run: |
+        cp ./dist/windows/main.exe ./SITL\ Launcher.exe
+    
+    # Zip everything but folders starting with .
+    - name: Zip Executable
+      run: |
+        zip -r SITL_Launcher.zip . -x ".*"
+
+    - name: Upload artifacts
+      if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+      uses: actions/upload-artifact@v3
+      with:
+        name: SITL_Launcher
+        path: SITL_Launcher.zip
+        retention-days: 7
+
+    - name: Move latest tag
+      if: github.ref == 'refs/heads/master'
+      run: |
+        git tag -f latest
+        git push -f origin latest
+
+    - name: Create release
+      if: github.ref == 'refs/heads/master'
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release
+        tag_name: latest
+        body: SITL Launcher
+        files: SITL_Launcher.zip

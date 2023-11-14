@@ -1,0 +1,12 @@
+*.exe
+__pycache__/
+
+bin/*/*
+!bin/*/scripts
+!bin/*/*.param
+!bin/*.exe
+build/
+*.zip
+sitl-launcher/
+sitl-launcher.egg-info/
+dist/
