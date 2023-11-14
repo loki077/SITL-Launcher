@@ -27,7 +27,8 @@ build_exe_options = {
                     "socket", 
                     "time",
                     "requests",
-                    "packaging"],
+                    "packaging",
+                    "webbrowser"],
     "include_files": ["bin", "config", "icons"],  # Add this line
 }
 

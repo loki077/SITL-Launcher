@@ -1,1 +1,12 @@
 pymavlink==2.4.37
+tkinter
+ttk
+configparser
+collections
+subprocess
+threading
+socket
+time
+requests
+packaging
+webbrowser

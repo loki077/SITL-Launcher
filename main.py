@@ -15,7 +15,10 @@ import configparser
 from collections import OrderedDict
 import subprocess
 import threading
-from modules import realflight
+from modules import realflight 
+from modules import versioncheck
+from __init__ import __version__
+import webbrowser
 
 print('Starting SITL Launcher...')
 
@@ -192,6 +195,10 @@ class App(tk.Tk):
         headless_but.grid(row=3, column=0, sticky='sew')
         realflight_but.grid(row=3, column=1, sticky='sew')
 
+        # # Create a button that shows the pop-up when clicked
+        # button = ttk.Button(self.controls_frame, text="Show Pop-up", command=self.show_popup)
+        # button.grid(row=4, column=0, sticky='sew')  # Use grid instead of pack
+
         # Pack the controls frame to display it
         self.controls_frame.pack(side='left', fill='y')
         # self.console_frame.pack(side='left', fill='both', expand=True)
@@ -199,6 +206,9 @@ class App(tk.Tk):
         # Click handlers
         headless_but['command'] = self.launch_headless
         realflight_but['command'] = self.launch_realflight
+        if versioncheck.check_for_updates(__version__, 'loki077', 'SITL-Launcher'):
+            self.show_new_version_popup()
+
 
     def launch_headless(self):
         """Launch SITL headless"""
@@ -254,6 +264,22 @@ class App(tk.Tk):
         # Disable resizing of the window
         self.resizable(False, False)
 
+    def show_new_version_popup(self):
+        popup = tk.Toplevel(self)
+        popup.title("SITL-LAuncher Software Update")
+        label = tk.Label(popup, text="A new version of Software is available! Consider updating.")
+        label.pack(padx=10, pady=10)
+        # write instruction in label of how to update
+        label = tk.Label(popup, text="To update, please visit below link and download the latest Release")
+        label.pack(padx=10, pady=10) 
+        label = tk.Label(popup, text="SITL-Launcher Releases", fg="blue", cursor="hand2")
+        label.pack(padx=10, pady=10)
+        label.bind("<Button-1>", self.open_link)
+        popup.attributes('-topmost', True)  # Bring the pop-up to the front
+    
+    def open_link(self, event):
+        webbrowser.open_new("https://github.com/loki077/SITL-Launcher/releases")
+    
     def run_sitl(self):
         """Run ArduPlane.exe"""
         # Clear console
